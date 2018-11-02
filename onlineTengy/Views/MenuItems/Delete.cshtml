@@ -1,0 +1,98 @@
+﻿@model onlineTengy.Models.MenuItemsViewModels.MenuItemViewModel
+@using onlineTengy.Extensions;
+
+@{
+    ViewData["Title"] = "Delete Menu-Items";
+}
+
+
+<h2 class="text-info">Delete Menu-Item</h2>
+<br />
+<form asp-action="Delete" method="post">
+    <div class="form-border row">
+        <input type="hidden" asp-for="MenuItem.Id" />
+
+        <div class="col-8">
+            <fieldset disabled>
+
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="MenuItem.Name" class="custom-label"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="MenuItem.Name" class="form-control" />
+                    </div>
+
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="MenuItem.Description" class="custom-label"></label>
+                    </div>
+                    <div class="col-8">
+                        <textarea rows="5" asp-for="MenuItem.Description" class="form-control"></textarea>
+                    </div>
+
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="MenuItem.Price" class="custom-label"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="MenuItem.Price" class="form-control" />
+                    </div>
+
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="MenuItem.CatagoryId" class="custom-label"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="MenuItem.Catagory.Name" class="form-control" />
+                    </div>
+
+
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="MenuItem.SubCatagoryId" class="custom-label"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="MenuItem.SubCatagory.Name" class="form-control" />
+                    </div>
+
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="MenuItem.Spicyness" class="custom-label"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="MenuItem.Spicyness" class="form-control" />
+
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <div class="col-1"></div>
+        <div class="col-3">
+            @if (Model.MenuItem.ImageUrl == null)
+            {
+                <h4 class="text-info">No image</h4>
+            }
+            else
+            {
+
+                <img src="@Model.MenuItem.ImageUrl" class="img-fluid" />
+            }
+        </div>
+        <br />
+
+        <div class="form-group">
+
+            <input type="submit" value="Delete" class="btn btn-danger" /> <i class="fas fa-remove"></i>
+            <a class="btn btn-info" asp-action="Index"><i class="fas fa-list"></i> List Menu-Items</a>
+        </div>
+    </div>
+
+</form>

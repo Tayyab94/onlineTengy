@@ -1,0 +1,57 @@
+﻿@model IEnumerable<onlineTengy.Models.MenuItem>
+@{
+    ViewData["Title"] = "Index";
+}
+<br />
+
+<h2>Menu-Item List</h2>
+<br />
+<hr />
+
+@await Html.PartialAsync("_CreateNewCatagoryButton")
+
+<div class="form-border">
+    <table class="table table-active">
+
+        <tr>
+            <th>
+                @Html.DisplayNameFor(x => x.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(x => x.Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(x => x.CatagoryId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(x => x.SubCatagoryId)
+            </th>
+            <th></th>
+            <th></th>
+        </tr>
+
+
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(c => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(c => item.Price)
+            </td>
+
+            <td>
+                @Html.DisplayFor(c => item.Catagory.Name)
+            </td>
+
+            <td>
+                @Html.DisplayFor(c => item.SubCatagory.Name)
+            </td>
+
+            @await Html.PartialAsync("_TableActionButtons", item.Id)
+        </tr>
+
+        }
+    </table>
+</div>

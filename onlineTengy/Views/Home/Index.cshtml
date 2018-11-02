@@ -1,0 +1,58 @@
+﻿@model onlineTengy.Models.HomeViewModels.IndexViewModel
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<br />
+@await Html.PartialAsync("_StatusMessage", Model.statusMessage)
+<br />
+
+@if (Model.Coupons.Count() > 0)
+{
+    <div class="container border">
+        <div class="carousel" data-ride="carousel" data-interval="2500">
+            @for (int i = 0; i < Model.Coupons.Count(); i++)
+            {
+                if (i == 0)
+                {
+                    <div class="carousel-item active">
+                        @{
+                            var Base64 = Convert.ToBase64String(Model.Coupons.ToList()[i].Pitcher);
+
+
+                            //var ImgSrc = string.Format("data:imgage/jpg;base64,{0}", Base64);
+
+                            var ImgSrc = string.Format($"data:imgage/jpg;base64,{Base64}");
+                        }
+                        <img src="@ImgSrc" height="53px" class="d-block w-100" />
+                    </div>
+                }
+                else
+                {
+                    <div class="carousel-item">
+                        @{
+                            var Base64 = Convert.ToBase64String(Model.Coupons.ToList()[i].Pitcher);
+
+
+                            //var ImgSrc = string.Format("data:imgage/jpg;base64,{0}", Base64);
+
+                            var ImgSrc = string.Format($"data:imgage/jpg;base64,{Base64}");
+                        }
+                        <img src="@ImgSrc" height="53px" class="d-block w-100" />
+                    </div>
+                }
+            }
+
+        </div>
+    </div>
+}
+
+
+@foreach (var item in Model.Catagories)
+{
+    <h3 class="text-success">@item.Name</h3>
+    <div class="row" style="padding-bottom:15px">
+        @await Html.PartialAsync("_ThubmNailAreaPartial", Model.MenuItems.Where(x => x.Catagory.Name.Equals(item.Name)))
+    </div>
+}

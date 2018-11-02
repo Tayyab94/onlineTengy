@@ -1,0 +1,62 @@
+﻿@model onlineTengy.Models.OrderDetailsViewModels.OrderDetailViewModel
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+<div class="row rounded" style="margin-bottom:15px; background-color:#F0F4F4E7">
+    <div class="col-6">
+        <div style="color:maroon">Order No: @Model.OrderHeader.Id</div>
+        <ul class="text-info">
+            @foreach(var itm in Model.OrderDetails)
+            {
+                <li>@itm.Name Quantity = @itm.Count</li>
+            }
+        </ul>
+    </div>
+    <div class="col-6">
+        <div class="row">
+            <div class="col-2">
+
+            </div><div class="col-4">
+            Order Total:
+            </div>
+            <div class="col-6">
+                @Model.OrderHeader.OrderTotal
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-2">
+
+            </div><div class="col-4">
+            PickUp Time:
+            </div>
+            <div class="col-6">
+                @Model.OrderHeader.PickUpDate.ToShortTimeString() @Model.OrderHeader.PickUpDate.ToShortDateString()
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-2">
+
+            </div><div class="col-4">
+            Order Status
+            </div>
+            <div class="col-6 ostatus">
+                @Model.OrderHeader.Status
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-2">
+
+            </div><div class="col-4">
+            Comment:
+            </div>
+            <div class="col-6">
+                @Model.OrderHeader.Comments
+            </div>
+        </div>
+
+    </div>
+</div>

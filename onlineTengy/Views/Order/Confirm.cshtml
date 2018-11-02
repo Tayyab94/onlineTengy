@@ -1,0 +1,19 @@
+﻿@model onlineTengy.Models.OrderDetailsViewModels.OrderDetailViewModel
+@{
+    ViewData["Title"] = "Confirm";
+}
+
+<br />
+<h2>Confirmation Order</h2>
+<hr />
+
+@if(Model!=null)
+{
+    @await Html.PartialAsync("_IndividualOrderDetails",Model)
+
+    <a asp-action="Index" asp-controller="Home" class="btn btn-outline-primary">Continue Shopping</a>
+}
+else
+{
+    <div class="text-danger">Sorry! Something went Wrong</div>
+}

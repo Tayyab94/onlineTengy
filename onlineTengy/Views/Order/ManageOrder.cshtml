@@ -1,0 +1,134 @@
+﻿@model List<onlineTengy.Models.OrderDetailsViewModels.OrderDetailViewModel>
+@using onlineTengy.Utility
+@{
+    ViewData["Title"] = "ManageOrder";
+}
+<script src="~/JqueryScript/Jquery.min.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        //getSubCatagory();   we will not define this function in to the Edit-View page
+
+        $(".btn").on("click", function () {
+        
+            var id = $(this).data("id");
+            var valu = $(this).data("value");
+     
+            $.ajax({
+
+                data: { id: id, s: valu },
+                type: "POST",
+                url: '@Url.Action("OrderSt","Order")',
+                success: function (data) {
+                    alert("YOur Record has been" + data);
+
+                 
+                    location.reload();
+                }
+            });
+
+
+
+        });
+    });
+
+
+    @*function getSubCatagory() {
+        var url = '@Url.Content("~/")' + "Order/OrderSt";
+        var ddlsource = "#catagoryId";
+
+        $.getJSON(url, { catagoryID: $(ddlsource).val() }, function (data) {
+
+            var items = '';
+
+            $("#SubCatagoryId").empty();
+
+            $.each(data,function (i, subcatagory) {
+                items += "<option value='" + subcatagory.value + "'>" + subcatagory.text + "</option>";
+            });
+            $("#SubCatagoryId").html(items);
+
+            //$("ul .ll").empty();
+            //$("ul .ll").append(items);
+
+
+        });
+    }*@
+</script>
+
+
+
+<div class="container row">
+    <br />
+    <h2>ManageOrder</h2>
+    <hr />
+</div>
+
+<form method="post">
+    @if (Model.Count > 0)
+    {
+        <div class="container">
+
+            @foreach (var item in Model)
+            {
+                @*<div class="container row">
+                        <div class="col-10">
+                            @await Html.PartialAsync("_IndividualOrderDetails",item)
+                        </div>
+                    </div>*@
+                @*<div class="row">
+                        <div class="col-10">
+
+                            @await Html.PartialAsync("_IndividualOrderDetails", item)
+                        </div>
+                        <div class="col-2">
+
+                        </div>
+                    </div>*@
+
+                <div class="row">
+                    <div class="col-10 col-md-9 col-sm-12">
+                        @await Html.PartialAsync("_IndividualOrderDetails", item)
+                    </div>
+                    <div class="col-2 col-md-3 col-sm-12 col-">
+                        @if (item.OrderHeader.Status == SD.StatusSubmitted)
+                        {
+                            @*<button type="submit" asp-action="OrderPrepared" data-id="@item.OrderHeader.Id" data-value="Submitted" asp-route-id="@item.OrderHeader.Id" class="btn btn-primary form-control">
+                                    <i class="fas fa-check"></i> Start Cooking
+                                </button>*@
+                            <button type="button" data-id="@item.OrderHeader.Id" data-value="Being Process" class="btn btn-primary form-control">
+                                <i class="fas fa-check"></i> Start Cooking
+                            </button>
+                        }
+                        @if (item.OrderHeader.Status == SD.StatusInProcess)
+                        {
+                            @*<button type="submit" asp-action="OrderReady" asp-route-id="@item.OrderHeader.Id" class="btn btn-success form-control">
+                                    <i class="fas fa-flag-checkered"></i> Order Prepared
+                                </button>*@
+
+                            <button type="button" data-id="@item.OrderHeader.Id" data-value="Status Ready" class="btn btn-success form-control">
+                                <i class="fas fa-flag-checkered"></i> Order Prepared
+                            </button>
+                        }
+                        @*<button type="submit" asp-action="OrderCancel" data-id="@item.OrderHeader.Id" data-value="Cencelled" asp-route-id="@item.OrderHeader.Id" style="margin-top:5px" class="btn btn-danger form-control">
+                                <i class="fas fa-times"></i> Cancel Order
+                            </button>*@
+
+                        <button type="button" data-id="@item.OrderHeader.Id" data-value="Cencelled" style="margin-top:5px" class="btn btn-danger form-control">
+                            <i class="fas fa-times"></i> Cancel Order
+                        </button>
+                    </div>
+                </div>
+            }
+
+        </div>
+    }
+    else
+    {
+        <div class="text-center text-info">
+            No order's is available Now.
+        </div>
+    }
+
+</form>
+

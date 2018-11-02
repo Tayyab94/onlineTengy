@@ -1,0 +1,127 @@
+﻿@model onlineTengy.Models.MenuItemsViewModels.MenuItemViewModel
+@using onlineTengy.Extensions;
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+@*<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>*@
+<script src="~/JqueryScript/Jquery.min.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        getSubCatagory();
+
+        $("#catagoryId").on("change", function () {
+            getSubCatagory();
+        });
+    });
+
+
+    function getSubCatagory() {
+        var url = '@Url.Content("~/")' + "MenuItems/GETSubCatagoriesList";
+        var ddlsource = "#catagoryId";
+
+        $.getJSON(url, { catagoryID: $(ddlsource).val() }, function (data) {
+
+            var items = '';
+
+            $("#SubCatagoryId").empty();
+
+            $.each(data,function (i, subcatagory) {
+                items += "<option value='" + subcatagory.value + "'>" + subcatagory.text + "</option>";
+            });
+            $("#SubCatagoryId").html(items);
+
+            //$("ul .ll").empty();
+            //$("ul .ll").append(items);
+
+
+        });
+    }
+</script>
+
+<h2>Create</h2>
+
+<form method="post" enctype="multipart/form-data">
+    <div class="form-border">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="MenuItem.Name" class="custom-label"></label>
+            </div>
+            <div class="col-5">
+                <input asp-for="MenuItem.Name" class="form-control" />
+            </div>
+            <span asp-validation-for="MenuItem.Name" class="text-danger"></span>
+        </div>
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="MenuItem.Description" class="custom-label"></label>
+            </div>
+            <div class="col-5">
+                <textarea rows="5" asp-for="MenuItem.Description" class="form-control"></textarea>
+            </div>
+            <div class="col-5">
+                <ul class="list-group">
+                    <li class=" ll list-group-item"></li>
+                </ul>
+            </div>
+            <span asp-validation-for="MenuItem.Description" class="text-danger"></span>
+        </div>
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="MenuItem.Price" class="custom-label"></label>
+            </div>
+            <div class="col-5">
+                <input asp-for="MenuItem.Price" class="form-control" />
+            </div>
+            <span asp-validation-for="MenuItem.Price" class="text-danger"></span>
+        </div>
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="MenuItem.ImageUrl" class="custom-label"></label>
+            </div>
+            <div class="col-5">
+                <input type="file" name="file" multiple class="form-control" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="MenuItem.CatagoryId" class="custom-label"></label>
+            </div>
+            <div class="col-5">
+                <select asp-for="@Model.MenuItem.CatagoryId" id="catagoryId" asp-items="Model.Catagory.ToSelectlistItem(Model.MenuItem.CatagoryId)" class="form-control"></select>
+            </div>
+
+
+        </div>
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="MenuItem.SubCatagoryId" class="custom-label"></label>
+            </div>
+            <div class="col-5">
+                <select asp-for="MenuItem.SubCatagoryId" name="SubCatagoryId" id="SubCatagoryId" asp-items="@(new SelectList(string.Empty,"Id","Name"))" class="form-control"></select>
+            </div>
+
+        </div>
+
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="MenuItem.Spicyness" class="custom-label"></label>
+            </div>
+            <div class="col-5">
+                <select asp-for="MenuItem.Spicyness" asp-items="Html.GetEnumSelectList<MenuItem.ESpicyness>()" class="form-control"></select>
+
+            </div>
+        </div>
+        <br />
+        <div class="form-group">
+            <input type="submit" value="Create" class="btn btn-outline-primary" />
+        </div>
+    </div>
+
+</form>
+

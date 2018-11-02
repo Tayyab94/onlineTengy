@@ -1,0 +1,46 @@
+﻿@model IEnumerable<onlineTengy.Models.OrderDetailsViewModels.OrderDetailViewModel>
+
+@*@using PagedList;
+@using PagedList.Mvc;
+
+
+@model IPagedList<onlineTengy.Models.OrderDetailsViewModels.OrderDetailViewModel>*@
+
+@*@model onlineTengy.Models.OrderDetailsViewModels.OrderListViewModel*@
+
+@{
+    ViewData["Title"] = "OrderHistory";
+}
+<br />
+<h2>OrderHistory</h2>
+<hr />
+@if (Model.Count() > 0)
+{
+    <div class="rounded">
+
+
+        @foreach (var item in Model)
+        {
+            @await Html.PartialAsync("_IndividualOrderDetails", item)
+        }
+    </div>
+}
+else
+{
+    <div>
+        <h2 class="text-justify text-center">Oop! No Order histry available..!</h2>
+    </div>
+}
+
+
+
+@*<div page-model="@Model.PageInfo" page-action="OrderHistory" page-classes-enable="true" page-class="bt border"
+         page-class-normal="btn btn-default active" page-class-selected="btn btn-primary active" class="btn-group m-1">
+    </div>
+    <br />*@
+
+@*<div></div>
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber)/@Model.PageCount
+<div>
+    @Html.PagedListPager(Model, Page => Url.Action("ShowProvince", new { Page=Page}))
+</div>*@

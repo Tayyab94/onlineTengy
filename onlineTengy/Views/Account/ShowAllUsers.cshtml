@@ -1,0 +1,70 @@
+﻿@model IEnumerable<onlineTengy.Models.AccountViewModels.NewUserClass>
+@{
+    ViewData["Title"] = "ShowAllUsers";
+}
+<br />
+
+<h2>Users List</h2>
+<hr />
+<div class="form-border">
+
+    <table class="table d-xl-table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.firstName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.lastName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Email)
+                <th>
+                    @Html.DisplayNameFor(model => model.phoneNo)
+                </th>
+
+
+
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.firstName)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.lastName)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Email)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.phoneNo)
+                    </td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <a class="btn btn-primary" href="@Url.Action("Edit/" + item.Id)">
+                                <i class="fas fa-edit"></i>
+                            </a>
+
+                            <a class="btn btn-danger" href="@Url.Action("Delete/" + item.Id)">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </div>
+                    </td>
+                    @*<a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>*@
+
+                    @*@await Html.PartialAsync("_TableActionButtons", item.Id)*@
+
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

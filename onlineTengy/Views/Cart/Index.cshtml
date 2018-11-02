@@ -1,0 +1,209 @@
+﻿@model onlineTengy.Models.OrderDetailsViewModels.OrderDetailsCart
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+<form method="post">
+    <h2>Shopping Cart</h2>
+    <hr />
+    @if (Model.ListCart.Count > 0)
+    {
+        <input id="uderId" asp-for="@Model.ListCart[0].ApplicationUserId" hidden />
+        <div class="border border-info" style="margin-bottom:10px; padding-bottom:30px">
+            <div class="container">
+                <table class="table table-striped" width="100%">
+                    <tr style="padding:15px">
+                        <th></th>
+                        <th style="width:70px; text-align:center">
+                            <label asp-for="@Model.ListCart.FirstOrDefault().MenuItem.Price"></label>
+                        </th>
+                        <th style="width:70px; text-align:center">
+                            <label asp-for="@Model.ListCart.FirstOrDefault().count"></label>
+                        </th>
+                        <th></th>
+                    </tr>
+
+                    @foreach (var item in Model.ListCart)
+                    {
+                        <tr style="padding:15px">
+                            <td>
+                                <b>
+                                    @Html.DisplayFor(c => item.MenuItem.Name)
+                                </b><br />
+                                <p>@Html.DisplayFor(c => item.MenuItem.Description)</p>
+                            </td>
+                            <td style="width:70px; text-align:center">
+                                @Html.DisplayFor(c => item.MenuItem.Name)
+                            </td>
+                            <td style="width:70px; text-align:center">
+                                @Html.DisplayFor(c => item.count)
+                            </td>
+                            <td>
+                                <button type="submit" asp-action="plus" class="btn btn-sm btn-primary" asp-route-cartId="@item.Id">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+
+                                <button type="submit" asp-action="minus" class="btn btn-sm btn-danger" asp-route-cartId="@item.Id">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-2">
+                        <label class="custom-label">Coupon Code:</label>
+                    </div>
+                    <div class="col-2">
+                        <input asp-for="@Model.OrderHeader.CouponCode" id="textConuponCode" class="form-control" />
+                    </div>
+                    <div class="col-2">
+                        <input type="button" value="Apply" id="btnCoupon" class="btn btn-sm btn-success" />
+                        <a class="btn btn-danger" asp-action="Index" asp-controller="Cart" id="btnRemoceCoupon" style="display:none">Remove</a>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-2">
+
+                        <label class="custom-label">Order Total:</label>
+                    </div>
+                    <div class="col-3">
+                        <input asp-for="@Model.OrderHeader.OrderTotal" readonly id="textOrderTotal" class="form-control" />
+                    </div>
+                    <div class="col-2">
+
+                    </div>
+                    <div class="col-2">
+
+                        <label class="custom-label">Order PickUp Time:</label>
+                    </div>
+                    <div class="col-3">
+                        <input asp-for="@Model.OrderHeader.PickUpDate" value="" id="tPicker" type="text" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-2">
+
+                        <label class="custom-label">Comments:</label>
+                    </div>
+                    <div class="col-10">
+                        <textarea asp-for="@Model.OrderHeader.Comments" style="height:100px" class="form-control"></textarea>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                    <div class="col-2">
+
+                    </div>
+                    <div class="col-5">
+                        <label class="text-danger" id="lblShopClosed" style="display:none">Restaurent is Closed for the Day!</label>
+                    </div>
+                    <div class="col-5 text-right">
+                        <button type="submit" id="btnplaceOrder" onclick="return ValidateInput()" value="Place Order" class="btn btn-outline-success">Place Order</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-info">No Item is added to the Shopping Cart</div>
+    }
+</form>
+
+
+@section Scripts{
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.10.0/jquery.timepicker.js"></script>
+
+    <script>
+
+        function ValidateInput() {
+            var time = document.getElementById("tPicker").value;
+            if (time.toString() == '') {
+                alert('Please Select your Time Now');
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+
+
+        $(document).ready(function () {
+            var currentTime = new Date();
+            var minimumTime = '';
+
+         
+            if (currentTime.getHours() < 11) {
+                minimumTime = '12:00Pm';
+            }
+            else {
+                if (currentTime.getMinutes() < 30) {
+                    minimumTime = (currentTime.getHours() + 1).toString() + ':30Pm';
+                } else {
+                    minimumTime = (currentTime.getHours() + 2).toString() + ':00Pm';
+                }
+            }
+            if (currentTime.getHours() > 20) {
+
+                //No More ORder
+
+                $("#tPicker").prop('disabled', true);
+                $("#btnplaceOrder").prop('disabled', true);
+                $("#lblShopClosed").show();
+            }
+
+            $("#tPicker").timepicker({
+                'minTime': minimumTime,
+                'maxTimme': '10:00Pm'
+            });
+
+
+            $("#btnCoupon").click(function () {
+
+                var totalorder = document.getElementById("textOrderTotal").value;
+
+
+                var CouponCode = document.getElementById("textConuponCode").value;
+
+                $.ajax({
+
+                    url: "/API/CouponsAPI?totalorder=" + totalorder + "&CouponCode=" + CouponCode,
+                    type: "GET",
+                    dataType: "text",
+                    success: function (data, textStatus, xhr) {
+                        alert(data)
+                        var splidData;
+
+                        alert(splidData = data.split(":"));
+                        if (splidData[1] == "E") {
+
+                            //Error 
+                            alert("Coupon is either invalid or doesn't meet the criteria..");
+                        }
+                        else {
+                            $("#textOrderTotal").attr('value', Math.round(splidData[0] * 100) / 100);
+
+                            //document.getElementById("textConuponCode").readonly = true;
+                            ////document.getElementById("#textConuponCode").readonly = true;
+                            ////document.getElementById("#btnCoupon").style.display = 'none';
+                            ////document.getElementById("#btnRemoceCoupon").style.display='';
+                            $("#btnRemoceCoupon").show();
+                            $("#btnCoupon").hide();
+                            $("#btnRemoceCoupon").attr('readonly');
+                        }
+                    }
+                });
+            });
+
+
+
+        });
+    </script>
+}

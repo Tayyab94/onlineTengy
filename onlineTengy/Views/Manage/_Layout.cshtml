@@ -1,0 +1,29 @@
+﻿@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container" style="margin-top:8px">
+    <div class="row">
+        <div class="col-6 offset-3">
+            <h2 class="text-info">Manage your account</h2>
+            <p class="text-justify">Change your account settings</p>
+
+        </div>
+    </div>
+</div>
+<hr />
+<div>
+    <div class="row">
+        <div class="col-md-3">
+            @await Html.PartialAsync("_ManageNav")
+        </div>
+        <div class="col-md-9">
+            @RenderBody()
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}
+
