@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore;
 using onlineTengy.Data;
 using onlineTengy.Models;
 using onlineTengy.Models.OrderDetailsViewModels;
-using onlineTengy.Services;
 using onlineTengy.Utility;
+using onlineTengy.Services;
 
 namespace onlineTengy.Controllers
 {
@@ -21,18 +21,17 @@ namespace onlineTengy.Controllers
     {
 
         private readonly ApplicationDbContext _context;
-        private readonly EmailSender _emailSender;
 
-        private  int  pageSize=2;
-        public OrderController(ApplicationDbContext d,EmailSender email)
+        private readonly IEmailSender emailSender;
+        private int pageSize = 2;
+        public OrderController(ApplicationDbContext d, IEmailSender email)
         {
             _context = d;
-            _emailSender = email;
+            emailSender = email;
 
         }
 
         [Authorize]
-        [HttpPost]
         public async Task<IActionResult> Confirm(int id)
         {
             var ClaimIdentity = (ClaimsIdentity)this.User.Identity;
@@ -48,15 +47,11 @@ namespace onlineTengy.Controllers
                 OrderDetails = await _context.OrderDetails.Where(c => c.OrderId == id).ToListAsync()
             };
 
-            //var CustomerEmail = _context.Users.Where(c => c.Id == orderDetailViewModel.OrderHeader.UserId).FirstOrDefault().Email;
-            //await _emailSender.SendOrderStatusAsync(CustomerEmail, orderDetailViewModel.OrderHeader.Id.ToString(), SD.StatusSubmitted);
-           
-
             return View(orderDetailViewModel);
         }
 
         [Authorize]
-        public async Task<IActionResult> OrderHistory(int page=1)
+        public async Task<IActionResult> OrderHistory(int page = 1)
         {
             var claimsIdentity = (ClaimsIdentity)this.User.Identity;
 
@@ -70,8 +65,8 @@ namespace onlineTengy.Controllers
             //    orders =new List<OrderDetailViewModel>()
             //};
 
-            List<OrderHeader> orderHeadersList =await _context.OrderHeaders.Where(c => c.UserId.Equals(claimId.Value)).OrderByDescending(c => c.OrderDate).ToListAsync();
-            
+            List<OrderHeader> orderHeadersList = await _context.OrderHeaders.Where(c => c.UserId.Equals(claimId.Value)).OrderByDescending(c => c.OrderDate).ToListAsync();
+
             var pageSie = 5;
             foreach (var item in orderHeadersList)
             {
@@ -98,7 +93,7 @@ namespace onlineTengy.Controllers
             //    ItemPerPage = pageSize,
             //    TotalItem = count
             //};
-            
+
             return View(orderDetailViewsVM);
 
             //return View(orderListVCM);
@@ -140,9 +135,6 @@ namespace onlineTengy.Controllers
             orderHeader.Status = SD.StatusInProcess;
 
             await _context.SaveChangesAsync();
-            var CustomerEmail = _context.Users.Where(c => c.Id == orderHeader.UserId).FirstOrDefault().Email;
-            await _emailSender.SendOrderStatusAsync(CustomerEmail, orderHeader.Id.ToString(), SD.StatusInProcess);
-
 
             return RedirectToAction(nameof(ManageOrder), "Order");
         }
@@ -154,8 +146,6 @@ namespace onlineTengy.Controllers
             orderHeader.Status = SD.StatusReady;
 
             await _context.SaveChangesAsync();
-            var CustomerEmail = _context.Users.Where(c => c.Id == orderHeader.UserId).FirstOrDefault().Email;
-            await _emailSender.SendOrderStatusAsync(CustomerEmail, orderHeader.Id.ToString(), SD.StatusReady);
 
             return RedirectToAction(nameof(ManageOrder), "Order");
         }
@@ -168,10 +158,10 @@ namespace onlineTengy.Controllers
             orderHeader.Status = SD.StatusCancelled;
 
             await _context.SaveChangesAsync();
-           
-            var CustomerEmail = _context.Users.Where(c => c.Id == orderHeader.UserId).FirstOrDefault().Email;
-            await _emailSender.SendOrderStatusAsync(CustomerEmail, orderHeader.Id.ToString(), SD.StatusCancelled);
-            
+
+            var CustomerEmail = _context.Users.Where(x => x.Id.Equals(orderHeader.UserId)).FirstOrDefault().Email;
+
+
             return RedirectToAction(nameof(ManageOrder), "Order");
         }
 
@@ -184,10 +174,8 @@ namespace onlineTengy.Controllers
             _context.SaveChanges();
             string me = s;
 
-            var CustomerEmail = _context.Users.Where(c => c.Id == orderHeader.UserId).FirstOrDefault().Email;
-             _emailSender.SendOrderStatusAsync(CustomerEmail, orderHeader.Id.ToString(),s);
-    
-
+            var CustomerEmail = _context.Users.Where(x => x.Id.Equals(orderHeader.UserId)).FirstOrDefault().Email;
+            emailSender.SendOrderStatusAsync(CustomerEmail, orderHeader.Id.ToString(), orderHeader.Status);
             return this.Json(me);
         }
 
@@ -249,9 +237,6 @@ namespace onlineTengy.Controllers
             }
             else
             {
-
-
-
                 //Get the List of orderHeader
                 List<OrderHeader> orderHeadersList = _context.OrderHeaders.Where(c => c.Status == SD.StatusReady)
                     .OrderByDescending(c => c.PickUpDate).ToList();
@@ -271,11 +256,12 @@ namespace onlineTengy.Controllers
 
                     orderDetailViewModelsVM.Add(orderDetailView);
                 }
-                
+
             }
 
             return View(orderDetailViewModelsVM);
         }
+
 
 
         //[Authorize(Roles =SD.AdminEndUser)]
@@ -321,6 +307,10 @@ namespace onlineTengy.Controllers
             orderHeader.Status = SD.StatusCompleted;
             await _context.SaveChangesAsync();
 
+
+            var CustomerEmail = _context.Users.Where(x => x.Id.Equals(orderHeader.UserId)).FirstOrDefault().Email;
+            await emailSender.SendOrderStatusAsync(CustomerEmail, orderHeader.Id.ToString(), SD.StatusCompleted);
+
             return RedirectToAction(nameof(ManageOrder), "Order");
 
         }
@@ -355,10 +345,10 @@ namespace onlineTengy.Controllers
             byte[] bytes = Encoding.ASCII.GetBytes(ConvertToString(orderDetailsList));
 
 
-            return File(bytes,"application/text","Orderdetail.csv");
+            return File(bytes, "application/text", "Orderdetail.csv");
         }
 
-        public string ConvertToString<T>(IList<T>data)
+        public string ConvertToString<T>(IList<T> data)
         {
             PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(typeof(T));
             DataTable table = new DataTable();
@@ -389,7 +379,7 @@ namespace onlineTengy.Controllers
 
             sb.AppendLine(string.Join(",", columnNames));
 
-            foreach (DataRow  row in table.Rows)
+            foreach (DataRow row in table.Rows)
             {
                 IEnumerable<string> field = row.ItemArray.Select(f => f.ToString());
 
@@ -397,6 +387,56 @@ namespace onlineTengy.Controllers
             }
 
             return sb.ToString();
+        }
+
+
+
+        //Function return the All completed orders to the Admin
+
+        [Authorize(Roles = SD.AdminEndUser)]
+        public async Task<IActionResult> DeliveredOrder()
+        {
+            List<OrderDetailViewModel> orderDetailViewModelsVM = new List<OrderDetailViewModel>();
+
+            List<OrderHeader> orderHeadersList = _context.OrderHeaders.Where(x => x.Status == SD.StatusCompleted)
+                .OrderBy(x => x.PickUpDate).ToList();
+
+            foreach (var item in orderHeadersList)
+            {
+                OrderDetailViewModel orderDetail = new OrderDetailViewModel
+                {
+                    OrderHeader = item,
+                    OrderDetails = await _context.OrderDetails.Where(x => x.OrderId == item.Id).ToListAsync()
+                };
+
+                orderDetailViewModelsVM.Add(orderDetail);
+            }
+
+            return View(orderDetailViewModelsVM);
+        }
+
+
+        //This method is Delete the completed orderby the admin End
+        public IActionResult CompletionOrderDelete(int id)
+        {
+            OrderHeader orderHeadersList = _context.OrderHeaders.Where(x => x.Id == id).SingleOrDefault();
+
+            List<OrderDetails> orderDetails = _context.OrderDetails.Where(x => x.OrderId == orderHeadersList.Id).ToList();
+
+            try
+            {
+
+                _context.OrderDetails.RemoveRange(orderDetails);
+                _context.OrderHeaders.Remove(orderHeadersList);
+
+                _context.SaveChanges();
+            }
+            catch (Exception e)
+            {
+
+            }
+            return RedirectToAction(nameof(DeliveredOrder));
+
         }
     }
 }

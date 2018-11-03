@@ -42,6 +42,12 @@ namespace onlineTengy.Services
 
                 Message = "Order No :" + OrderNo + " is ready for PickUp now.";
             }
+            if (OrderStatus == SD.StatusCompleted)
+            {
+                Subject = "Order Completed";
+
+                Message = "Order No :<strong>" + OrderNo + "</strong> has been Completed Now... 1 Hour me ap k Pass";
+            }
 
             //Calling EmailSender Method that have been define in the Services/emailSenderExtension  Class
 

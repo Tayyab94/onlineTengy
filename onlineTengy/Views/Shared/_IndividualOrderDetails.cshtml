@@ -1,4 +1,6 @@
 ﻿@model onlineTengy.Models.OrderDetailsViewModels.OrderDetailViewModel
+@using onlineTengy.Utility;
+
 @*
     For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 *@
@@ -42,9 +44,17 @@
             </div><div class="col-4">
             Order Status
             </div>
-            <div class="col-6 ostatus">
-                @Model.OrderHeader.Status
-            </div>
+                  <div class="col-6 ostatus">
+                      @if (Model.OrderHeader.Status == SD.StatusCompleted)
+                      {
+                          <p class="text-danger">@Model.OrderHeader.Status</p>
+                      }
+                      else
+                      {
+
+                          @Model.OrderHeader.Status
+                      }
+                  </div>
         </div>
 
         <div class="row">

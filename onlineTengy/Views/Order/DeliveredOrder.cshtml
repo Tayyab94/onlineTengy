@@ -1,0 +1,39 @@
+﻿@model List<onlineTengy.Models.OrderDetailsViewModels.OrderDetailViewModel>
+@using onlineTengy.Utility
+
+@{
+    ViewData["Title"] = "DeliveredOrder";
+}
+
+<h2>DeliveredOrder</h2>
+
+@if(Model.Count>0)
+{
+    <div class="container">
+        @foreach (var item in Model)
+        {
+        <div class="row">
+            <div class="col-10 col-md-9 col-sm-12">
+                @await Html.PartialAsync("_IndividualOrderDetails", item)
+            </div>
+            <div class="col-2 col-md-3 col-sm-12 col-">
+                @if (item.OrderHeader.Status == SD.StatusCompleted)
+                {
+                    @*<button type="submit" asp-action="CompletionOrderDelete" asp-route-id="@item.OrderHeader.Id" class="btn btn-primary form-control">
+                        <i class="fas fa-thumbs-up"></i> Order PickUp
+                    </button>*@
+                    <a href="/Order/CompletionOrderDelete/@item.OrderHeader.Id" class="btn btn-primary form-control">  <i class="fas fa-thumbs-up"></i> Delete</a>
+                    @*<button type="button" data-id="@item.OrderHeader.Id" data-value="Being Process" class="btn btn-primary form-control">
+                    <i class="fas fa-check"></i> Start Cooking
+                </button>*@
+                }
+
+            </div>
+        </div>
+        }
+    </div>
+}
+else
+{
+    <h2 class="text-danger">No Order is Completed yet..!</h2>
+}
