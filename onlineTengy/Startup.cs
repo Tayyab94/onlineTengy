@@ -49,7 +49,8 @@ namespace onlineTengy
 
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
-        
+            
+
             services.AddMvc();
 
             //Add the Session 

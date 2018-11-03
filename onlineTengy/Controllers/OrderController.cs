@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using onlineTengy.Data;
 using onlineTengy.Models;
 using onlineTengy.Models.OrderDetailsViewModels;
+using onlineTengy.Services;
 using onlineTengy.Utility;
 
 namespace onlineTengy.Controllers
@@ -20,15 +21,18 @@ namespace onlineTengy.Controllers
     {
 
         private readonly ApplicationDbContext _context;
+        private readonly EmailSender _emailSender;
 
         private  int  pageSize=2;
-        public OrderController(ApplicationDbContext d)
+        public OrderController(ApplicationDbContext d,EmailSender email)
         {
             _context = d;
+            _emailSender = email;
 
         }
 
         [Authorize]
+        [HttpPost]
         public async Task<IActionResult> Confirm(int id)
         {
             var ClaimIdentity = (ClaimsIdentity)this.User.Identity;
@@ -43,6 +47,10 @@ namespace onlineTengy.Controllers
                 OrderHeader = _context.OrderHeaders.Where(c => c.Id == id && c.UserId == cId.Value).FirstOrDefault(),
                 OrderDetails = await _context.OrderDetails.Where(c => c.OrderId == id).ToListAsync()
             };
+
+            //var CustomerEmail = _context.Users.Where(c => c.Id == orderDetailViewModel.OrderHeader.UserId).FirstOrDefault().Email;
+            //await _emailSender.SendOrderStatusAsync(CustomerEmail, orderDetailViewModel.OrderHeader.Id.ToString(), SD.StatusSubmitted);
+           
 
             return View(orderDetailViewModel);
         }
@@ -132,6 +140,9 @@ namespace onlineTengy.Controllers
             orderHeader.Status = SD.StatusInProcess;
 
             await _context.SaveChangesAsync();
+            var CustomerEmail = _context.Users.Where(c => c.Id == orderHeader.UserId).FirstOrDefault().Email;
+            await _emailSender.SendOrderStatusAsync(CustomerEmail, orderHeader.Id.ToString(), SD.StatusInProcess);
+
 
             return RedirectToAction(nameof(ManageOrder), "Order");
         }
@@ -143,6 +154,8 @@ namespace onlineTengy.Controllers
             orderHeader.Status = SD.StatusReady;
 
             await _context.SaveChangesAsync();
+            var CustomerEmail = _context.Users.Where(c => c.Id == orderHeader.UserId).FirstOrDefault().Email;
+            await _emailSender.SendOrderStatusAsync(CustomerEmail, orderHeader.Id.ToString(), SD.StatusReady);
 
             return RedirectToAction(nameof(ManageOrder), "Order");
         }
@@ -155,7 +168,10 @@ namespace onlineTengy.Controllers
             orderHeader.Status = SD.StatusCancelled;
 
             await _context.SaveChangesAsync();
-
+           
+            var CustomerEmail = _context.Users.Where(c => c.Id == orderHeader.UserId).FirstOrDefault().Email;
+            await _emailSender.SendOrderStatusAsync(CustomerEmail, orderHeader.Id.ToString(), SD.StatusCancelled);
+            
             return RedirectToAction(nameof(ManageOrder), "Order");
         }
 
@@ -167,6 +183,11 @@ namespace onlineTengy.Controllers
 
             _context.SaveChanges();
             string me = s;
+
+            var CustomerEmail = _context.Users.Where(c => c.Id == orderHeader.UserId).FirstOrDefault().Email;
+             _emailSender.SendOrderStatusAsync(CustomerEmail, orderHeader.Id.ToString(),s);
+    
+
             return this.Json(me);
         }
 

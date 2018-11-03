@@ -14,9 +14,9 @@
                 <input type="hidden" asp-for="Email" />
                 @if (Model.IsEmailConfirmed)
                 {
-                    <div class="input-group">
-                        <input asp-for="Email" disabled class="form-control" />
-                        <span class="input-group-addon" aria-hidden="true"><span class="glyphicon glyphicon-ok text-success"></span></span>
+                    <div class="input-group" >
+                        <input asp-for="Email" disabled class="form-control" style="border:2px solid #5B63DD"/>
+                        <span class="input-group-addon" aria-hidden="true"><i class="fas fa-check-circle text-info"></i></span>
                     </div>
                 }
                 else

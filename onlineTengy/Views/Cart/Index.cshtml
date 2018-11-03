@@ -10,6 +10,8 @@
     @if (Model.ListCart.Count > 0)
     {
         <input id="uderId" asp-for="@Model.ListCart[0].ApplicationUserId" hidden />
+
+        <input id="uderId" asp-for="@Model.OrderHeader.Id" hidden />
         <div class="border border-info" style="margin-bottom:10px; padding-bottom:30px">
             <div class="container">
                 <table class="table table-striped" width="100%">
